@@ -4,9 +4,9 @@ import java.net.URI;
 import java.util.List;
 
 import com.example.restfulwebservicespringbootlearning.entity.User;
+import com.example.restfulwebservicespringbootlearning.exception.UserNotFoundException;
 import com.example.restfulwebservicespringbootlearning.repository.UserDAO;
 
-import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,7 +30,11 @@ public class UserController {
 
     @GetMapping(path = "/user/{id}")
     public User retrieveUser(@PathVariable int id) {
-        return userDAO.findOne(id);
+        User user = userDAO.findOne(id);
+        if (user == null) {
+            throw new UserNotFoundException("id-" + id);
+        }
+        return user;
     }
 
     @PostMapping(path = "/user")
@@ -40,7 +44,7 @@ public class UserController {
                 .toUri();
         return ResponseEntity.created(location).build();
 
-        //return 201-Created
-        //return location: api to get this savedUser in header response
+        // return 201-Created
+        // return location: api to get this savedUser in header response
     }
 }
