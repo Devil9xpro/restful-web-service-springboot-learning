@@ -3,6 +3,8 @@ package com.example.restfulwebservicespringbootlearning.controller;
 import java.net.URI;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import com.example.restfulwebservicespringbootlearning.entity.User;
 import com.example.restfulwebservicespringbootlearning.exception.UserNotFoundException;
 import com.example.restfulwebservicespringbootlearning.repository.UserDAO;
@@ -39,7 +41,7 @@ public class UserController {
     }
 
     @PostMapping(path = "/user")
-    public ResponseEntity<Object> createUser(@RequestBody User user) {
+    public ResponseEntity<Object> createUser(@Valid @RequestBody User user) {
         User savedUser = userDAO.save(user);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedUser.getId())
                 .toUri();
