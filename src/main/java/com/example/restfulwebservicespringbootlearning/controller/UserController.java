@@ -10,6 +10,7 @@ import com.example.restfulwebservicespringbootlearning.exception.UserNotFoundExc
 import com.example.restfulwebservicespringbootlearning.repository.UserDAO;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 @RestController
 @RequestMapping("/api")
@@ -32,12 +35,16 @@ public class UserController {
     }
 
     @GetMapping(path = "/user/{id}")
-    public User retrieveUser(@PathVariable int id) {
+    public EntityModel<User> retrieveUser(@PathVariable int id) {
         User user = userDAO.findOne(id);
         if (user == null) {
             throw new UserNotFoundException("id-" + id);
         }
-        return user;
+        // hateos
+        EntityModel<User> model = new EntityModel<>(user);
+        WebMvcLinkBuilder linkTo = linkTo(methodOn(this.getClass()).retrieveAllUsers());
+        model.add(linkTo.withRel("all-users"));
+        return model;
     }
 
     @PostMapping(path = "/user")
@@ -49,6 +56,7 @@ public class UserController {
 
         // return 201-Created
         // return location: api to get this savedUser in header response
+
     }
 
     @DeleteMapping("/user/{id}")
